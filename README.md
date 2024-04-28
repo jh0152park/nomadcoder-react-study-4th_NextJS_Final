@@ -58,6 +58,21 @@ https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118
 
 https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/31458baa-f07a-4f5e-ac01-10c995e27ec5
 
+## Edit Post
+
+https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/3c7b01e2-b782-43f0-901e-18a8bfdcb5b1
+
+## Delete Post
+
+https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/e79950f6-0124-4967-887d-f0158a5bbd93
+
+## Comment
+
+https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/6df06733-5a37-4ea4-8a22-8bb55cf33581
+
+
+
+
 
 
 
