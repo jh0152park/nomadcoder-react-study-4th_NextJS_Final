@@ -70,6 +70,9 @@ https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118
 
 https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/6df06733-5a37-4ea4-8a22-8bb55cf33581
 
+## Search Post
+
+https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/f1684291-5b07-42b3-b9e7-4578996af0c7
 
 
 
