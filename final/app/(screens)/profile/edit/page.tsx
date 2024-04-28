@@ -1,75 +1,24 @@
-"use client";
+import PRISMA_DB from "@/lib/db/prisma-db";
+import getSession from "@/lib/session/get-session";
+import WriteProfile from "./write-profile";
 
-import Input from "@/components/input";
-import TextArea from "@/components/text-area";
-import LoadingButton from "@/components/loading-button";
-import BackButton from "@/components/profile/back-button";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+async function getUser(sid: number) {
+    return await PRISMA_DB.user.findUnique({
+        where: {
+            id: sid,
+        },
+        select: {
+            username: true,
+            description: true,
+        },
+    });
+}
 
-import { useState } from "react";
-
-import { UpdateProfile } from "./action";
-import { useFormState } from "react-dom";
-
-export default function EditProfile() {
-    const [preview, setPreview] = useState("");
-    const [_, trigger] = useFormState(UpdateProfile, null);
-
-    async function onImageChange(event: React.ChangeEvent<HTMLInputElement>) {
-        if (!event.target.files) return;
-
-        const file = event.target.files[0];
-
-        if (file.size > 4 * 1024 * 1024) {
-            alert("Size of image should be less than 4MB");
-            return;
-        }
-
-        const fileURL = URL.createObjectURL(file);
-        setPreview(fileURL);
-    }
+export default async function EditProfile() {
+    const session = await getSession();
+    const user = await getUser(session.id!);
 
     return (
-        <div className="relative flex flex-col items-start justify-start w-full h-screen p-5 mb-32">
-            <div>
-                <BackButton />
-            </div>
-
-            <span className="absolute text-xl font-bold -translate-x-1/2 left-1/2 top-5">
-                Edit Profile
-            </span>
-
-            <form action={trigger} className="flex flex-col gap-5 mt-20">
-                <div className="flex flex-col items-start justify-start gap-2">
-                    <span className="font-semibold">Username</span>
-                    <Input name="username" type="text" placeholder="Username" />
-                </div>
-                <div className="flex flex-col items-start justify-start gap-2">
-                    <span className="font-semibold">Profile Description</span>
-                    <TextArea name="description" placeholder="Description" />
-                </div>
-                <div className="flex flex-col gap-2">
-                    <span>Profile Photo</span>
-                    <label
-                        htmlFor="photo"
-                        className="flex items-center justify-center bg-center bg-cover border-2 border-dashed rounded-md hover:cursor-pointer aspect-square"
-                        style={{
-                            backgroundImage: `url(${preview})`,
-                        }}
-                    >
-                        {!preview && <PhotoIcon className="w-20" />}
-                    </label>
-                    <input
-                        id="photo"
-                        type="file"
-                        name="photo"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={onImageChange}
-                    />
-                </div>
-                <LoadingButton name="Save" />
-            </form>
-        </div>
+        <WriteProfile name={user?.username!} description={user?.description!} />
     );
 }

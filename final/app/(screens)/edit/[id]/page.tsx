@@ -1,36 +1,35 @@
-"use client";
+import PRISMA_DB from "@/lib/db/prisma-db";
+import { notFound, redirect } from "next/navigation";
+import { IsExistPost } from "../../tweet/[id]/action";
+import UpdatePost from "./update-post";
 
-import LoadingButton from "@/components/loading-button";
-import BackButton from "@/components/profile/back-button";
-import TextArea from "@/components/text-area";
+interface IProps {
+    params: {
+        id: number;
+    };
+}
 
-import { notFound } from "next/navigation";
-import { useFormState } from "react-dom";
-import { EditPost } from "../action";
+async function getPost(id: number) {
+    return await PRISMA_DB.post.findUnique({
+        where: {
+            id: id,
+        },
+        select: {
+            payload: true,
+        },
+    });
+}
 
-export default function Edit({ params }: { params: { id: number } }) {
+export default async function Edit({ params }: IProps) {
     if (isNaN(+params.id)) {
         notFound();
     }
 
-    const [_, trigger] = useFormState(EditPost, +params.id);
+    if (!(await IsExistPost(+params.id))) {
+        notFound();
+    }
 
-    return (
-        <div className="w-full max-w-[430px] h-full flex flex-col items-start justify-start p-5 ">
-            <BackButton />
-            <span className="absolute text-xl font-bold -translate-x-1/2 left-1/2 top-5">
-                Edit threads
-            </span>
+    const post = await getPost(+params.id);
 
-            <form action={trigger} className="flex flex-col w-full gap-3 mt-14">
-                <TextArea
-                    name="edit"
-                    h="200"
-                    placeholder="Edit your post here 😎 🔥 💪🏻 👻"
-                    required
-                />
-                <LoadingButton name="Edit" />
-            </form>
-        </div>
-    );
+    return <UpdatePost id={+params.id} payload={post?.payload!} />;
 }
