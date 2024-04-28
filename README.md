@@ -50,7 +50,9 @@ https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118
 
 https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/36a19fd9-232e-475a-b40e-49fddbfa6deb
 
+## Like and Dislike Post and My Like Posts
 
+https://github.com/jh0152park/nomadcoder-react-study-4th_NextJS_Final/assets/118165975/88c3e474-ad15-45e7-a9b8-446e10f52517
 
 
 
