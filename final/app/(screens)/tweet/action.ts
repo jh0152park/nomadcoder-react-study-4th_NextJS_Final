@@ -59,6 +59,31 @@ export async function DecreaseLike(id: number, like: number, uid: number) {
     await DeleteLikeList(id, uid);
 }
 
+// export async function IsAlreadyLike(id: number, uid: number) {
+//     const user = await PRISMA_DB.user.findUnique({
+//         where: {
+//             id: uid,
+//         },
+//         select: {
+//             likePost: true,
+//         },
+//     });
+
+//     const post = await PRISMA_DB.post.findUnique({
+//         where: {
+//             id: id,
+//         },
+//         select: {
+//             like: true,
+//         },
+//     });
+
+//     return {
+//         like: user?.likePost.includes(id),
+//         count: post?.like,
+//     };
+// }
+
 export async function IsAlreadyLike(id: number, uid: number) {
     const user = await PRISMA_DB.user.findUnique({
         where: {
@@ -69,19 +94,7 @@ export async function IsAlreadyLike(id: number, uid: number) {
         },
     });
 
-    const post = await PRISMA_DB.post.findUnique({
-        where: {
-            id: id,
-        },
-        select: {
-            like: true,
-        },
-    });
-
-    return {
-        like: user?.likePost.includes(id),
-        count: post?.like,
-    };
+    return Boolean(user?.likePost.includes(id));
 }
 
 export async function AddLikeList(id: number, uid: number) {

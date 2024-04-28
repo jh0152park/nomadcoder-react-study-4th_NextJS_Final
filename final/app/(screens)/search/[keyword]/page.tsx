@@ -1,8 +1,20 @@
-import BackButton from "@/components/profile/back-button";
 import { SearchPost } from "../action";
-import PostSummary from "@/components/post/post-summary";
+import PRISMA_DB from "@/lib/db/prisma-db";
 import MBBuffer from "@/components/post/mb-buffer";
 import getSession from "@/lib/session/get-session";
+import PostSummary from "@/components/post/post-summary";
+import BackButton from "@/components/profile/back-button";
+
+async function getCurrentUser(sid: number) {
+    return await PRISMA_DB.user.findUnique({
+        where: {
+            id: sid,
+        },
+        select: {
+            likePost: true,
+        },
+    });
+}
 
 export default async function SearchDetail({
     params,
@@ -11,7 +23,9 @@ export default async function SearchDetail({
 }) {
     const decodeKeyword = decodeURI(params.keyword);
     const posts = await SearchPost(decodeKeyword);
+
     const session = await getSession();
+    const currentUser = await getCurrentUser(session.id!);
 
     return (
         <div className="w-full max-w-[430px] h-full flex flex-col items-start justify-start pt-20 ">
@@ -25,7 +39,12 @@ export default async function SearchDetail({
             </div>
 
             {posts.map((post) => (
-                <PostSummary key={post.id} {...post} sessionId={session.id!} />
+                <PostSummary
+                    {...post}
+                    key={post.id}
+                    sessionId={session.id!}
+                    currentUser={currentUser!}
+                />
             ))}
             <MBBuffer mb="32" />
         </div>

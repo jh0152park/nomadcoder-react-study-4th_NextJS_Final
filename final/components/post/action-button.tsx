@@ -1,6 +1,5 @@
 "use client";
 
-import useSWR from "swr";
 import { useState } from "react";
 import {
     ChatBubbleOvalLeftIcon as OutlineChatIcon,
@@ -10,70 +9,83 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
-import {
-    DecreaseLike,
-    IncreaseLike,
-    IsAlreadyLike,
-} from "@/app/(screens)/tweet/action";
+import { DecreaseLike, IncreaseLike } from "@/app/(screens)/tweet/action";
 import { useRouter } from "next/navigation";
-
-async function getPostLike(id: number, userId: number) {
-    return await IsAlreadyLike(id, userId);
-}
 
 export default function ActionButton({
     id,
     userId,
     likeCount,
+    alreadyLike,
 }: {
     id: number;
     userId: number;
     likeCount: number;
+    alreadyLike: boolean;
 }) {
     const router = useRouter();
+
     const [share, setShare] = useState(false);
     const [message, setMessage] = useState(false);
 
-    const { data, mutate } = useSWR(
-        `like_${id}`,
-        () => getPostLike(id, userId),
-        {
-            revalidateIfStale: true,
-            revalidateOnFocus: false,
-        }
-    );
+    const [like, setLike] = useState(alreadyLike);
+    const [count, setCount] = useState(likeCount);
 
     async function toggleHeart() {
-        if (data?.like) {
-            // currently already like
+        if (like) {
+            // to be dislike
             await DecreaseLike(id, likeCount, userId);
-            mutate(
-                {
-                    like: !data?.like,
-                    count: data?.count! - 1 > 0 ? data?.count! - 1 : 0,
-                },
-                true
-            );
+            setCount(count - 1 > 0 ? count - 1 : 0);
         } else {
-            // currently not like
+            // to be like
             await IncreaseLike(id, likeCount, userId);
-            mutate(
-                {
-                    like: !data?.like,
-                    count: data?.count! + 1,
-                },
-                true
-            );
+            setCount(count + 1);
         }
+
+        setLike((prev) => !prev);
         router.refresh();
     }
+
+    // const { data, mutate } = useSWR(
+    //     `like_${id}`,
+    //     () => getPostLike(id, userId),
+    //     {
+    //         revalidateIfStale: true,
+    //         revalidateOnFocus: false,
+    //     }
+    // );
+
+    // async function toggleHeart() {
+    //     if (data?.like) {
+    //         // currently already like
+    //         await DecreaseLike(id, likeCount, userId);
+    //         mutate(
+    //             {
+    //                 like: !data?.like,
+    //                 count: data?.count! - 1 > 0 ? data?.count! - 1 : 0,
+    //             },
+    //             true
+    //         );
+    //     } else {
+    //         // currently not like
+    //         await IncreaseLike(id, likeCount, userId);
+    //         mutate(
+    //             {
+    //                 like: !data?.like,
+    //                 count: data?.count! + 1,
+    //             },
+    //             true
+    //         );
+    //     }
+    //     router.refresh();
+    // }
 
     return (
         <div className="flex flex-col" id="action-button">
             <div className="flex items-center justify-start gap-2 mt-3">
-                {data?.like ? (
+                {like ? (
                     <SolidHeartIcon
-                        className={`${["w-[22px]", data.like ? "text-red-500" : ""].join(" ")}`}
+                        className="w-[22px] text-red-500"
                         onClick={toggleHeart}
                     />
                 ) : (
@@ -92,9 +104,7 @@ export default function ActionButton({
                     onClick={() => setMessage((prev) => !prev)}
                 />
             </div>
-            <span className="mt-2 text-sm text-neutral-400">
-                {data?.count} likes
-            </span>
+            <span className="mt-2 text-sm text-neutral-400">{count} likes</span>
         </div>
     );
 }

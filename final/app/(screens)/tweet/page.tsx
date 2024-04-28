@@ -20,6 +20,7 @@ async function getAllPosts() {
                     id: true,
                     username: true,
                     profile_image: true,
+                    likePost: true,
                 },
             },
         },
@@ -27,9 +28,21 @@ async function getAllPosts() {
     return posts;
 }
 
+async function getCurrentUser(sid: number) {
+    return await PRISMA_DB.user.findUnique({
+        where: {
+            id: sid,
+        },
+        select: {
+            likePost: true,
+        },
+    });
+}
+
 export default async function Posts() {
     const posts = await getAllPosts();
     const session = await getSession();
+    const currentUser = await getCurrentUser(session.id!);
 
     return (
         <div className="w-full min-h-screen max-w-[430px] pt-20 ">
@@ -48,7 +61,12 @@ export default async function Posts() {
             </div>
 
             {posts.map((post) => (
-                <PostSummary key={post.id} {...post} sessionId={session.id!} />
+                <PostSummary
+                    {...post}
+                    key={post.id}
+                    sessionId={session.id!}
+                    currentUser={currentUser!}
+                />
             ))}
             <MBBuffer mb="32" />
         </div>

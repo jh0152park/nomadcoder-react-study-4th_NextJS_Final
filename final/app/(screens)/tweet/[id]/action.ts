@@ -31,6 +31,7 @@ export async function getPost(id: number) {
                     id: true,
                     username: true,
                     profile_image: true,
+                    likePost: true,
                 },
             },
         },

@@ -3,8 +3,8 @@
 import Image from "next/image";
 import MoreButton from "./more-button";
 import ActionButton from "./action-button";
-import { DEFAULT_PROFILE_PHOTO } from "@/lib/project-common";
 import { useRouter } from "next/navigation";
+import { DEFAULT_PROFILE_PHOTO } from "@/lib/project-common";
 
 interface IPost {
     id: number;
@@ -18,6 +18,9 @@ interface IPost {
     comment: string[];
     userId: number;
     sessionId: number;
+    currentUser: {
+        likePost: number[];
+    };
 }
 
 export default function PostSummary({
@@ -27,6 +30,7 @@ export default function PostSummary({
     userId,
     payload,
     sessionId,
+    currentUser,
 }: IPost) {
     const router = useRouter();
 
@@ -36,15 +40,9 @@ export default function PostSummary({
             event.target.textContent === "Delete"
         ) {
             //
-        } else if (!event.target.className.toString().includes("SVG"))
+        } else if (!event.target.className.toString().includes("SVG")) {
             router.push(`/tweet/${id}`);
-        else return;
-        // if (
-        //     event.target.textContent === "Edit" ||
-        //     event.target.textContent === "Delete"
-        // ) {
-        //     return;
-        // }
+        }
     }
 
     return (
@@ -78,7 +76,12 @@ export default function PostSummary({
                 </div>
                 <span className="text-sm font-extralight">{payload}</span>
 
-                <ActionButton likeCount={like} id={id} userId={sessionId} />
+                <ActionButton
+                    likeCount={like}
+                    id={id}
+                    userId={sessionId}
+                    alreadyLike={currentUser!.likePost.includes(id)}
+                />
             </div>
         </div>
     );

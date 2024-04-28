@@ -6,7 +6,6 @@ import getSession from "@/lib/session/get-session";
 import BackButton from "@/components/profile/back-button";
 import { DEFAULT_PROFILE_PHOTO } from "@/lib/project-common";
 import PostSummary from "@/components/post/post-summary";
-import MBBuffer from "@/components/post/mb-buffer";
 
 async function getAllMyPosts(uid: number) {
     const posts = await PRISMA_DB.post.findMany({
@@ -24,6 +23,7 @@ async function getAllMyPosts(uid: number) {
                     id: true,
                     username: true,
                     profile_image: true,
+                    likePost: true,
                 },
             },
         },
@@ -32,9 +32,21 @@ async function getAllMyPosts(uid: number) {
     return posts.filter((post) => post.userId === uid);
 }
 
+async function getCurrentUser(sid: number) {
+    return await PRISMA_DB.user.findUnique({
+        where: {
+            id: sid,
+        },
+        select: {
+            likePost: true,
+        },
+    });
+}
+
 export default async function Profile() {
     const session = await getSession();
     const myPosts = await getAllMyPosts(session.id!);
+    const currentUser = await getCurrentUser(session.id!);
 
     const user = await PRISMA_DB.user.findUnique({
         where: {
@@ -114,9 +126,10 @@ export default async function Profile() {
             <div className="w-full h-[60%] overflow-y-scroll   pb-10">
                 {myPosts.map((post) => (
                     <PostSummary
-                        key={post.id}
                         {...post}
+                        key={post.id}
                         sessionId={session.id!}
+                        currentUser={currentUser!}
                     />
                 ))}
             </div>

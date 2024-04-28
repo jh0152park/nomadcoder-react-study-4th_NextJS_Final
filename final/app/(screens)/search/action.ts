@@ -22,6 +22,7 @@ export async function SearchPost(keyword: string) {
                     id: true,
                     username: true,
                     profile_image: true,
+                    likePost: true,
                 },
             },
         },
