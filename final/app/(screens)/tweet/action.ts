@@ -2,10 +2,23 @@
 
 import PRISMA_DB from "@/lib/db/prisma-db";
 import getSession from "@/lib/session/get-session";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export async function DeletePost(id: number) {
     const session = await getSession();
+    const post = await PRISMA_DB.post.findUnique({
+        where: {
+            id: id,
+        },
+        select: {
+            userId: true,
+        },
+    });
+
+    if (post?.userId !== session.id! || !post) {
+        notFound();
+    }
+
     await PRISMA_DB.post.delete({
         where: {
             id: id,
