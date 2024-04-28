@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  email         String          @unique
+  username      String          @unique
+  password      String
+  description   String          @default("")
+  profile_image String?         @default("https://pbs.twimg.com/profile_images/923557898218889216/g4BH7Arj.jpg")
+  Message       Message[]
+  sendDM        DirectMessage[] @relation("sender")
+  reveiveDM     DirectMessage[] @relation("receiver")
+  Post          Post[]
+  likePost      Int[]
+}
+
+// model LikePost {
+//   id         Int      @id @default(autoincrement())
+//   created_at DateTime @default(now())
+//   updated_at DateTime @updatedAt
+
+//   posts Int[] @default([])
+//   user  User  @relation(fields: [userId], references: [id])
+
+//   userId Int
+// }
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  payload String
+  like    Int      @default(0)
+  comment String[]
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  message String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+model DirectMessage {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  sender   User @relation(fields: [senderId], references: [id], onDelete: Cascade, name: "sender")
+  senderId Int
+
+  receiver   User @relation(fields: [receiverId], references: [id], onDelete: Cascade, name: "receiver")
+  receiverId Int
+}
